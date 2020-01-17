@@ -25,6 +25,7 @@ services:
       discovery.type: single-node
     networks:
       - elk
+    restart: always
 
   logstash:
     build:
@@ -47,6 +48,7 @@ services:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     networks:
       - elk
+    restart: always
     depends_on:
       - elasticsearch
 
@@ -64,8 +66,26 @@ services:
       - "5601:5601"
     networks:
       - elk
+    restart: always
     depends_on:
       - elasticsearch
+
+  filebeat:
+    build:
+      context: filebeat/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - ./filebeat/config/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro # Configuration file
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro           # Docker logs
+      - /var/run/docker.sock:/var/run/docker.sock:ro                       # Additional information about containers
+      - filebeat:/usr/share/filebeat/data:rw     	                   # Persistence data
+    user: root                                                             # Allow access to log files and docker.sock
+    restart: always
+    networks:
+      - elk
+    depends_on:
+      - logstash
 
 networks:
   elk:
