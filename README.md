@@ -1,23 +1,25 @@
-# Elastic stack (ELK) on Docker
+# Complete Application Analysis & Monitoring Stack for Docker
 
 [![Join the chat at https://gitter.im/deviantony/docker-elk](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/deviantony/docker-elk?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Elastic Stack version](https://img.shields.io/badge/ELK-7.5.1-blue.svg?style=flat)](https://github.com/deviantony/docker-elk/issues/462)
 [![Build Status](https://api.travis-ci.org/deviantony/docker-elk.svg?branch=master)](https://travis-ci.org/deviantony/docker-elk)
 
-Run the latest version of the [Elastic stack][elk-stack] with Docker and Docker Compose.
+Run the latest version of the [Elastic stack][elk-stack] with Docker and Docker Compose, plus Filebeat and APM Server.
 
 It gives you the ability to analyze any data set by using the searching/aggregation capabilities of Elasticsearch and
-the visualization power of Kibana.
+the visualization power of Kibana. Plus per-application performance metrics with Elastic APM
 
 > :information_source: The Docker images backing this stack include [Stack Features][stack-features] (formerly X-Pack)
-with [paid features][paid-features] enabled by default (see [How to disable paid
-features](#how-to-disable-paid-features) to disable them). The [trial license][trial-license] is valid for 30 days.
+with [paid features][paid-features] disabled by default (see [How to enable paid
+features](#how-to-enable-paid-features) to enable them). The [trial license][trial-license] is valid for 30 days.
 
 Based on the official Docker images from Elastic:
 
 * [Elasticsearch](https://github.com/elastic/elasticsearch/tree/master/distribution/docker)
 * [Logstash](https://github.com/elastic/logstash/tree/master/docker)
 * [Kibana](https://github.com/elastic/kibana/tree/master/src/dev/build/tasks/os_packages/docker_generator)
+* [Filebeat](https://github.com/elastic/beats/tree/master/filebeat)
+* [Elastic APM](https://github.com/elastic/apm-server)
 
 Other available stack variants:
 
@@ -42,7 +44,9 @@ Other available stack variants:
    * [How to configure Elasticsearch](#how-to-configure-elasticsearch)
    * [How to configure Kibana](#how-to-configure-kibana)
    * [How to configure Logstash](#how-to-configure-logstash)
-   * [How to disable paid features](#how-to-disable-paid-features)
+   * [How to configure Filebeat](#how-to-configure-filebeat)
+   * [How to configure Elastic APM](#how-to-configure-elastic-apm)
+   * [How to enable paid features](#how-to-enable-paid-features)
    * [How to scale out the Elasticsearch cluster](#how-to-scale-out-the-elasticsearch-cluster)
 4. [Extensibility](#extensibility)
    * [How to add plugins](#how-to-add-plugins)
@@ -68,6 +72,7 @@ By default, the stack exposes the following ports:
 * 9200: Elasticsearch HTTP
 * 9300: Elasticsearch TCP transport
 * 5601: Kibana
+* 8200: Elastic APM Server
 
 > :information_source: Elasticsearch's [bootstrap checks][booststap-checks] were purposely disabled to facilitate the
 > setup of the Elastic stack in development environments. For production setups, we recommend users to set up their host
@@ -124,8 +129,6 @@ $ docker-compose down -v
 ## Initial setup
 
 ### Setting up user authentication
-
-> :information_source: Refer to [How to disable paid features](#how-to-disable-paid-features) to disable authentication.
 
 The stack is pre-configured with the following **privileged** bootstrap user:
 
@@ -261,9 +264,27 @@ Logstash will be expecting a [`log4j2.properties`][log4j-props] file for its own
 Please refer to the following documentation page for more details about how to configure Logstash inside Docker
 containers: [Configuring Logstash for Docker][ls-docker].
 
-### How to disable paid features
+### How to configure Filebeat
 
-Switch the value of Elasticsearch's `xpack.license.self_generated.type` option from `trial` to `basic` (see [License
+The Filebeat default configuration is stored in [`filebeat/config/filebeat.docker.yml`][config-filebeat].
+
+It is also possible to map the entire `config` directory instead of a single file.
+
+Please refer to the following documentation page for more details about how to configure Filebeat inside Docker
+containers: [Running Filebeat on Docker][filebeat-docker].
+
+### How to configure Elastic APM
+
+The Elastic APM default configuration is stored in [`apm-server/apm-server.yml`][config-apm].
+
+It is also possible to map the entire `config` directory instead of a single file.
+
+Please refer to the following documentation page for more details about how to configure Elastic APM inside Docker
+containers: [Running Elastic APM on Docker][apm-docker].
+
+### How to enable paid features
+
+Switch the value of Elasticsearch's `xpack.license.self_generated.type` option from `basic` to `trial` (see [License
 settings][trial-license]).
 
 ### How to scale out the Elasticsearch cluster
@@ -394,10 +415,14 @@ instead of `elasticsearch`.
 [config-es]: ./elasticsearch/config/elasticsearch.yml
 [config-kbn]: ./kibana/config/kibana.yml
 [config-ls]: ./logstash/config/logstash.yml
+[config-filebeat]: ./filebeat/config/filebeat.docker.yml
+[config-apm]: ./apm-server/apm-server.yml
 
 [es-docker]: https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
 [kbn-docker]: https://www.elastic.co/guide/en/kibana/current/docker.html
 [ls-docker]: https://www.elastic.co/guide/en/logstash/current/docker-config.html
+[filebeat-docker]: https://www.elastic.co/guide/en/beats/filebeat/current/running-on-docker.html
+[apm-docker]: https://www.elastic.co/guide/en/apm/server/current/running-on-docker.html
 
 [log4j-props]: https://github.com/elastic/logstash/tree/7.3/docker/data/logstash/config
 [esuser]: https://github.com/elastic/elasticsearch/blob/7.3/distribution/docker/src/docker/Dockerfile#L18-L19
