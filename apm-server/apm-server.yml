@@ -7,7 +7,7 @@ apm-server:
     host: "kibana:5601"
     enabled: true
     username: "elastic"
-    password: "uLkn9XzGqyL3KX1PtUhN"
+    password: "changeme"
 
 queue.mem.events: 4096
 max_procs: 4
@@ -15,7 +15,7 @@ max_procs: 4
 output.elasticsearch:
   hosts: ["http://elasticsearch:9200"]
   username: "elastic"
-  password: "uLkn9XzGqyL3KX1PtUhN"
+  password: "changeme"
 
 logging.level: info
 logging.to_files: false
