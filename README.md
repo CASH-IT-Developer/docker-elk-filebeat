@@ -156,7 +156,7 @@ Remove the `ELASTIC_PASSWORD` environment variable from the `elasticsearch` serv
 Use the `kibana` user inside the Kibana configuration file (`kibana/config/kibana.yml`) and the `logstash_system` user
 inside the Logstash configuration file (`logstash/config/logstash.yml`) in place of the existing `elastic` user.
 
-Replace the password for the `elastic` user inside the Logstash pipeline file (`logstash/pipeline/logstash.conf`).
+Replace the password for the `elastic` user inside the Logstash pipeline file (`logstash/pipeline/logstash.conf`) and APM server config file (`apm-server/apm-server.yml`)
 
 > :information_source: Do not use the `logstash_system` user inside the Logstash *pipeline* file, it does not have
 > sufficient permissions to create indices. Follow the instructions at [Configuring Security in Logstash][ls-security]
@@ -164,10 +164,10 @@ Replace the password for the `elastic` user inside the Logstash pipeline file (`
 
 See also the [Configuration](#configuration) section below.
 
-4. Restart Kibana and Logstash to apply changes
+4. Restart Kibana, Logstash, and APM to apply changes
 
 ```console
-$ docker-compose restart kibana logstash
+$ docker-compose restart kibana logstash apm-server
 ```
 
 > :information_source: Learn more about the security of the Elastic stack at [Tutorial: Getting started with
