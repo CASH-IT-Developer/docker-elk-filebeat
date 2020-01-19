@@ -1,4 +1,4 @@
-version: '3.2'
+version: '3.3'
 
 services:
   elasticsearch:
@@ -23,8 +23,6 @@ services:
       # Use single node discovery in order to disable production mode and avoid bootstrap checks
       # see https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
       discovery.type: single-node
-    networks:
-      - elk
     restart: always
 
   logstash:
@@ -46,8 +44,6 @@ services:
       - "9600:9600"
     environment:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
-    networks:
-      - elk
     restart: always
     depends_on:
       - elasticsearch
@@ -64,8 +60,6 @@ services:
         read_only: true
     ports:
       - "5601:5601"
-    networks:
-      - elk
     restart: always
     depends_on:
       - elasticsearch
@@ -82,14 +76,23 @@ services:
       - filebeat:/usr/share/filebeat/data:rw                               # Persistence data
     user: root                                                             # Allow access to log files and docker.sock
     restart: always
-    networks:
-      - elk
     depends_on:
       - logstash
 
-networks:
-  elk:
-    driver: bridge
+  apm-server:
+    build:
+      context: apm-server/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - ./apm-server/apm-server.yml:/usr/share/apm-server/apm-server.yml:ro
+    ports:
+      - "8200:8200"
+    user: apm-server
+    restart: always
+    depends_on:
+      - elasticsearch
+      - kibana
 
 volumes:
   elasticsearch:

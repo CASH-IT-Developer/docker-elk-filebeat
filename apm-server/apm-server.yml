@@ -1,0 +1,21 @@
+apm-server:
+  host: "0.0.0.0:8200"
+  concurrent_requests: 5
+  rum:
+    enabled: true
+  kibana:
+    host: "kibana:5601"
+    enabled: true
+    username: "elastic"
+    password: "uLkn9XzGqyL3KX1PtUhN"
+
+queue.mem.events: 4096
+max_procs: 4
+
+output.elasticsearch:
+  hosts: ["http://elasticsearch:9200"]
+  username: "elastic"
+  password: "uLkn9XzGqyL3KX1PtUhN"
+
+logging.level: info
+logging.to_files: false
